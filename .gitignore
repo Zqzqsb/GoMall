@@ -1,0 +1,53 @@
+# 二进制文件
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# 测试二进制文件，使用 `go test -c` 构建
+*.test
+
+# Go 覆盖率工具输出
+*.out
+
+# 依赖目录（如果使用 Go modules，可以保留 vendor/ 目录）
+# vendor/
+
+# Go workspace 文件
+go.work
+
+# Go 模块校验和文件（通常应该提交到仓库，但根据需求可以忽略）
+# go.sum
+
+# 编辑器和 IDE 特定文件
+
+# Visual Studio Code
+.vscode/
+*.code-workspace
+
+# JetBrains IDE（如 GoLand）
+.idea/
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# Vim
+*.swp
+*.swo
+*.vim
+
+# Emacs
+*~
+\#*\#
+.\#*
+
+# 操作系统生成的文件
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+
