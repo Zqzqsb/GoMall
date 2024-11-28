@@ -1,0 +1,16 @@
+// idl/hello/hello.proto
+syntax = "proto3";
+
+package frontend.home;
+
+option go_package = "frontend/home";
+
+import "api.proto";
+
+message Empty {}
+
+service HelloService {
+   rpc Home(Empty) returns(Empty) { 
+      option (api.get) = "/";
+   }
+}
