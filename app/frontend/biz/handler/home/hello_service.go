@@ -3,11 +3,12 @@ package home
 import (
 	"context"
 
-	"github.com/cloudwego/hertz/pkg/app"
-	"github.com/cloudwego/hertz/pkg/protocol/consts"
 	"zqzqsb/gomall/app/frontend/biz/service"
 	"zqzqsb/gomall/app/frontend/biz/utils"
 	home "zqzqsb/gomall/app/frontend/hertz_gen/frontend/home"
+
+	"github.com/cloudwego/hertz/pkg/app"
+	"github.com/cloudwego/hertz/pkg/protocol/consts"
 )
 
 // Home .
@@ -28,5 +29,5 @@ func Home(ctx context.Context, c *app.RequestContext) {
 		return
 	}
 
-	utils.SendSuccessResponse(ctx, c, consts.StatusOK, resp)
+	c.HTML(consts.StatusOK, "home.tmpl", resp)
 }
