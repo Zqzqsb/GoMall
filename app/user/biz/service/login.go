@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+
 	user "zqzqsb.com/gomall/rpc_gen/kitex_gen/user"
 )
 

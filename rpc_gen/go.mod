@@ -1,4 +1,4 @@
-module zqzqsb.com/gmall/rpc_gen
+module zqzqsb.com/gomall/rpc_gen
 
 go 1.22.0
 
