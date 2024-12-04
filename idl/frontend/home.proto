@@ -1,4 +1,3 @@
-// idl/hello/hello.proto
 syntax = "proto3";
 
 package frontend.home;
