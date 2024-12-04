@@ -16,3 +16,9 @@ func (User) TableName() string {
 func Create(db *gorm.DB, user *User) error {
 	return db.Create(user).Error
 }
+
+func GetbyEmail(db *gorm.DB, email string) (*User, error) {
+	var user User
+	err := db.Where("email = ?", email).First(&user).Error
+	return &user, err
+}
