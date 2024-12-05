@@ -13,7 +13,7 @@ import (
 	"gopkg.in/natefinch/lumberjack.v2"
 	"zqzqsb.com/gomall/app/user/biz/dal"
 	"zqzqsb.com/gomall/app/user/conf"
-	"zqzqsb.com/gomall/rpc_gen/kitex_gen/user/userservice"
+	"zqzqsb.com/gomall/app/user/kitex_gen/user/userservice"
 )
 
 func main() {
@@ -34,6 +34,9 @@ func main() {
 }
 
 func kitexInit() (opts []server.Option) {
+	opts = append(opts, server.
+		WithTransHandlerFactory(&mixTransHandlerFactory{nil}))
+
 	// address
 	addr, err := net.ResolveTCPAddr("tcp", conf.GetConf().Kitex.Address)
 	if err != nil {

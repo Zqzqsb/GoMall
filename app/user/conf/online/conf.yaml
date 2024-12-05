@@ -21,4 +21,3 @@ redis:
   username: ""
   password: ""
   db: 0
-

@@ -6,7 +6,7 @@ import (
 
 	"github.com/joho/godotenv"
 	"zqzqsb.com/gomall/app/user/biz/dal/mysql"
-	user "zqzqsb.com/gomall/rpc_gen/kitex_gen/user"
+	user "zqzqsb.com/gomall/app/user/kitex_gen/user"
 )
 
 func TestLogin_Run(t *testing.T) {

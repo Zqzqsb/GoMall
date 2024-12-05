@@ -6,7 +6,7 @@ import (
 
 	"github.com/joho/godotenv"
 	"zqzqsb.com/gomall/app/user/biz/dal/mysql"
-	user "zqzqsb.com/gomall/rpc_gen/kitex_gen/user"
+	user "zqzqsb.com/gomall/app/user/kitex_gen/user"
 )
 
 func TestRegister_Run(t *testing.T) {
@@ -17,8 +17,8 @@ func TestRegister_Run(t *testing.T) {
 	// init req and assert value
 
 	req := &user.RegisterReq{
-		Email: "test@test.com",
-		Password: "testpasswd@20241204",
+		Email:           "test@test.com",
+		Password:        "testpasswd@20241204",
 		PasswordConfirm: "testpasswd@20241204",
 	}
 	resp, err := s.Run(req)
@@ -26,5 +26,4 @@ func TestRegister_Run(t *testing.T) {
 	t.Logf("resp: %v", resp)
 
 	// todo: edit your unit test
-
 }

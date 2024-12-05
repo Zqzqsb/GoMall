@@ -7,7 +7,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 	"zqzqsb.com/gomall/app/user/biz/dal/mysql"
 	"zqzqsb.com/gomall/app/user/biz/model"
-	user "zqzqsb.com/gomall/rpc_gen/kitex_gen/user"
+	user "zqzqsb.com/gomall/app/user/kitex_gen/user"
 )
 
 type LoginService struct {

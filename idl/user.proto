@@ -3,6 +3,7 @@ syntax = "proto3";
 package user; 
 
 option go_package = "/user";
+import "api.proto";
 
 message RegisterReq {
     string email = 1;
@@ -21,7 +22,23 @@ message LoginResp{
     int32 user_id = 1;
 }
 
+message HelloReq {
+    string _ = 1;
+}
+
+message HelloResp {
+    string RespBody = 1;
+}
+
 service UserService {
-    rpc Register(RegisterReq) returns (RegisterResp) { }
-    rpc Login(LoginReq) returns (LoginResp) { }
+    rpc Register(RegisterReq) returns (RegisterResp) {
+        option (api.post) = "/register";
+    }
+    rpc Login(LoginReq) returns (LoginResp) { 
+        option (api.post) = "/login";
+    }
+    
+    rpc Hello(HelloReq) returns (HelloResp) { 
+        option (api.get) = "/hello";
+    }
 }
