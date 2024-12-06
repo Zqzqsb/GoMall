@@ -1,3 +1,3 @@
-.PHONY: gen-frontend
-gen-frontend:
-	cwgo server --type HTTP --idl ../../idl/frontend/home.proto --module zqzqsb/gomall/app/frontend -I ../../idl --service frontend
+.PHONY: gen-user
+gen-user:
+	cwgo server --type RPC  --module zqzqsb/gomall/app/user -I ../../idl --idl ../../idl/user/user.proto --service user --hex
