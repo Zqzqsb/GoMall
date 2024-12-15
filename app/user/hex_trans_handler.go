@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"log"
 	"net"
 	"regexp"
 	"time"
@@ -19,6 +20,7 @@ import (
 	"github.com/cloudwego/kitex/pkg/remote/trans/detection"
 	"github.com/cloudwego/kitex/pkg/remote/trans/netpoll"
 	"github.com/cloudwego/kitex/pkg/remote/trans/nphttp2"
+	consulapi "github.com/hashicorp/consul/api"
 	"github.com/hertz-contrib/cors"
 	"zqzqsb.com/gomall/app/user/biz/router"
 )
@@ -93,8 +95,45 @@ func initHertz() *route.Engine {
 	return h.Engine
 }
 
+func registerServiceWithConsul(serviceID, serviceName, serviceAddress string, servicePort int) {
+	// 配置 Consul 客户端
+	config := consulapi.DefaultConfig()
+	config.Address = "127.0.0.1:8500"
+	client, err := consulapi.NewClient(config)
+	if err != nil {
+		log.Fatalf("Failed to create Consul client: %v", err)
+	}
+
+	// 定义服务注册信息
+	registration := &consulapi.AgentServiceRegistration{
+		ID:      serviceID,
+		Name:    serviceName,
+		Address: serviceAddress,
+		Port:    servicePort,
+		Check: &consulapi.AgentServiceCheck{
+			HTTP:     fmt.Sprintf("http://%s:%d/ping", serviceAddress, servicePort),
+			Interval: "10s",
+			Timeout:  "5s",
+		},
+	}
+
+	// 注册服务
+	err = client.Agent().ServiceRegister(registration)
+	if err != nil {
+		log.Fatalf("Failed to register service with Consul: %v", err)
+	}
+	log.Printf("Service %s registered with Consul", serviceName)
+}
+
 var hertzEngine *route.Engine
 
 func init() {
 	hertzEngine = initHertz()
+
+	serviceID := "user-service-001"
+	serviceName := "user-service"
+	serviceAddress := "192.168.110.112"
+	servicePort := 8888
+
+	registerServiceWithConsul(serviceID, serviceName, serviceAddress, servicePort)
 }

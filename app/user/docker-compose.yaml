@@ -13,3 +13,12 @@ services:
     image: "redis:latest"
     ports:
       - 6378:6379
+  consul:
+    image: "consul:1.15.0"
+    container_name: consul-server
+    ports:
+      - "8500:8500" # Consul Web UI 和 HTTP API 的端口
+      - "8600:8600/udp" # DNS 服务的 UDP 端口
+    environment:
+      CONSUL_BIND_INTERFACE: eth0
+    command: agent -server -bootstrap -ui -client=0.0.0.0
