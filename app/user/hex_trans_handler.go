@@ -2,10 +2,10 @@ package main
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"net"
 	"regexp"
+	"time"
 
 	"github.com/cloudwego/hertz/pkg/app"
 	hertzServer "github.com/cloudwego/hertz/pkg/app/server"
@@ -19,6 +19,7 @@ import (
 	"github.com/cloudwego/kitex/pkg/remote/trans/detection"
 	"github.com/cloudwego/kitex/pkg/remote/trans/netpoll"
 	"github.com/cloudwego/kitex/pkg/remote/trans/nphttp2"
+	"github.com/hertz-contrib/cors"
 	"zqzqsb.com/gomall/app/user/biz/router"
 )
 
@@ -61,7 +62,7 @@ func (t *transHandler) OnRead(ctx context.Context, conn net.Conn) error {
 			klog.Info("using Hertz to process request")
 			err := hertzEngine.Serve(ctx, c)
 			if err != nil {
-				err = errors.New(fmt.Sprintf("HERTZ: %s", err.Error()))
+				err = fmt.Errorf("HERTZ: %w", err)
 			}
 			return err
 		}
@@ -71,6 +72,13 @@ func (t *transHandler) OnRead(ctx context.Context, conn net.Conn) error {
 
 func initHertz() *route.Engine {
 	h := hertzServer.New(hertzServer.WithIdleTimeout(0))
+	h.Use(cors.New(cors.Config{
+		AllowAllOrigins: true,
+		AllowMethods:    []string{"POST", "GET"},
+		AllowHeaders:    []string{"*"},
+		ExposeHeaders:   []string{"Content-Length"},
+		MaxAge:          12 * time.Hour,
+	}))
 	// add a ping route to test
 	h.GET("/ping", func(c context.Context, ctx *app.RequestContext) {
 		ctx.JSON(consts.StatusOK, utils.H{"ping": "pong"})
