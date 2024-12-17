@@ -1,0 +1,30 @@
+version: "3.8"
+
+services:
+  consul:
+    image: "consul:1.15.0"
+    container_name: consul-server
+    ports:
+      - "8500:8500" # Consul Web UI 和 HTTP API 的端口
+      - "8600:8600/udp" # DNS 服务的 UDP 端口
+      - "8600:8600/tcp" # 可选：DNS 服务的 TCP 端口
+    environment:
+      CONSUL_BIND_INTERFACE: eth0
+    command: agent -server -bootstrap -ui -client=0.0.0.0
+    networks:
+      - gateway_default
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8500/v1/status/leader"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: "512M"
+
+# 自定义网络，确保各服务之间可以通信
+networks:
+  gateway_default:
+    driver: bridge

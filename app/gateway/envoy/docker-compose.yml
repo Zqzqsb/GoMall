@@ -1,0 +1,23 @@
+version: "3.8"
+
+services:
+  envoy:
+    image: envoyproxy/envoy:v1.27.0
+    container_name: envoy_gateway
+    ports:
+      - "8080:8080" # 映射 Envoy 的 HTTP 端口
+      - "9901:9901" # 映射 Envoy 的管理接口端口
+    volumes:
+      - ./envoy.yml:/etc/envoy/envoy.yaml # 映射配置文件到容器内
+    networks:
+      - gateway_default
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: "1G"
+
+# 自定义网络，确保各服务之间可以通信
+networks:
+  gateway_default:
+    driver: bridge

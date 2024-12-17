@@ -1,0 +1,75 @@
+node:
+  id: "envoy-1"    # 唯一的节点标识符，可以自定义
+  cluster: "gateway-cluster"    # 集群名称，可以自定义
+
+static_resources:
+  listeners:
+    - name: listener_0
+      address:
+        socket_address:
+          address: 0.0.0.0
+          port_value: 8080
+      filter_chains:
+        - filters:
+            - name: envoy.filters.network.http_connection_manager
+              typed_config:
+                "@type": type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager
+                stat_prefix: ingress_http
+                codec_type: AUTO
+                route_config:
+                  name: local_route
+                  virtual_hosts:
+                    - name: backend_services
+                      domains: ["*"]
+                      routes:
+                        - match:
+                            prefix: "/login"
+                          route:
+                            cluster: user-service
+                            timeout: 0s
+                            retry_policy:
+                              retry_on: 5xx
+                              num_retries: 3
+                            upgrade_configs:
+                              - upgrade_type: grpc
+                        - match:
+                            prefix: "/register"
+                          route:
+                            cluster: user-service
+                            timeout: 0s
+                            retry_policy:
+                              retry_on: 5xx
+                              num_retries: 3
+                            upgrade_configs:
+                              - upgrade_type: grpc
+                http_filters:
+                  - name: envoy.filters.http.router
+                    typed_config:
+                      "@type": type.googleapis.com/envoy.extensions.filters.http.router.v3.Router
+                access_log:
+                  - name: envoy.access_loggers.stdout
+                    typed_config:
+                      "@type": type.googleapis.com/envoy.extensions.access_loggers.stream.v3.StdoutAccessLog
+                      
+  clusters:
+    - name: user-service
+      connect_timeout: 5s
+      type: strict_dns
+      lb_policy: round_robin
+      http2_protocol_options: {}  # 启用 HTTP/2 支持 gRPC
+      load_assignment:
+        cluster_name: user-service
+        endpoints:
+          - lb_endpoints:
+              - endpoint:
+                  address:
+                    socket_address:
+                      address: 172.17.0.1  # 宿主机在 Docker bridge 网络中的 IP 地址
+                      port_value: 8888
+
+admin:
+  access_log_path: /dev/null
+  address:
+    socket_address:
+      address: 0.0.0.0
+      port_value: 9901
