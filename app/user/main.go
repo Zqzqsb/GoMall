@@ -24,7 +24,6 @@ func main() {
 
 	dal.Init()
 	opts := kitexInit()
-
 	svr := userservice.NewServer(new(UserServiceImpl), opts...)
 
 	err = svr.Run()
