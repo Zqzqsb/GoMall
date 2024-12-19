@@ -18,6 +18,7 @@ func Register(r *server.Hertz) {
 
 	root := r.Group("/", rootMw()...)
 	root.GET("/hello", append(_helloMw(), user.Hello)...)
-	root.POST("/login", append(_loginMw(), user.Login)...)
+	root.POST("/login", _loginMw()...) 
+	// r.POST("/login" , mw.JwtMiddleware.LoginHandler)
 	root.POST("/register", append(_registerMw(), user.Register)...)
 }

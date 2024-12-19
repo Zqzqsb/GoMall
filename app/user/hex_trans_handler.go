@@ -23,6 +23,7 @@ import (
 	consulapi "github.com/hashicorp/consul/api"
 	"github.com/hertz-contrib/cors"
 	"zqzqsb.com/gomall/app/user/biz/router"
+	mw "zqzqsb.com/gomall/app/user/biz/router/middleware"
 )
 
 type mixTransHandlerFactory struct {
@@ -128,6 +129,7 @@ func registerServiceWithConsul(serviceID, serviceName, serviceAddress string, se
 var hertzEngine *route.Engine
 
 func init() {
+	mw.InitJwt()
 	hertzEngine = initHertz()
 
 	serviceID := "user-service-001"

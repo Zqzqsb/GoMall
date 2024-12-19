@@ -4,6 +4,7 @@ package user
 
 import (
 	"github.com/cloudwego/hertz/pkg/app"
+	mw "zqzqsb.com/gomall/app/user/biz/router/middleware"
 )
 
 func rootMw() []app.HandlerFunc {
@@ -17,8 +18,10 @@ func _helloMw() []app.HandlerFunc {
 }
 
 func _loginMw() []app.HandlerFunc {
-	// your code...
-	return nil
+	// 返回 JWT 中间件的 LoginHandler 作为处理函数
+	return []app.HandlerFunc{
+		mw.JwtMiddleware.LoginHandler, // 处理登录请求并生成 JWT Token
+	}
 }
 
 func _registerMw() []app.HandlerFunc {
