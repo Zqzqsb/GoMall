@@ -48,6 +48,14 @@ func kitexInit() (opts []server.Option) {
 		ServiceName: conf.GetConf().Kitex.Service,
 	}))
 
+	// rigister server to consul
+	serviceID := "user-rpc-001"
+	serviceName := "user-service"
+	serviceAddress := "192.168.110.112"
+	servicePort := 8888
+
+	registerServiceWithConsul(serviceID, serviceName, serviceAddress, servicePort)
+
 	// klog
 	logger := kitexlogrus.NewLogger()
 	klog.SetLogger(logger)
