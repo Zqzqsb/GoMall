@@ -101,6 +101,7 @@ func registerServiceWithConsul(serviceID, serviceName, serviceAddress string, se
 	config := consulapi.DefaultConfig()
 	config.Address = "127.0.0.1:8500"
 	client, err := consulapi.NewClient(config)
+	
 	if err != nil {
 		log.Fatalf("Failed to create Consul client: %v", err)
 	}
@@ -132,8 +133,8 @@ func init() {
 	mw.InitJwt()
 	hertzEngine = initHertz()
 
-	serviceID := "user-service-001"
-	serviceName := "user-service"
+	serviceID := "user-http-001"
+	serviceName := "user-service-http"
 	serviceAddress := "192.168.110.112"
 	servicePort := 8888
 

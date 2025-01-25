@@ -50,7 +50,7 @@ func kitexInit() (opts []server.Option) {
 
 	// rigister server to consul
 	serviceID := "user-rpc-001"
-	serviceName := "user-service"
+	serviceName := "user-service-rpc"
 	serviceAddress := "192.168.110.112"
 	servicePort := 8888
 
