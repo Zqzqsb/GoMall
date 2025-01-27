@@ -7,11 +7,13 @@ replace github.com/apache/thrift => github.com/apache/thrift v0.13.0
 require (
 	github.com/cloudwego/fastpb v0.0.5
 	github.com/cloudwego/hertz v0.9.3
-	github.com/cloudwego/hertz-examples/bizdemo/hertz_jwt v0.0.0-20241209055421-48f44c5272d3
+	github.com/cloudwego/hertz-examples/bizdemo/hertz_session v0.0.0-20250114035118-f78605978eea
 	github.com/cloudwego/kitex v0.11.3
 	github.com/hashicorp/consul/api v1.30.0
 	github.com/hertz-contrib/cors v0.1.0
+	github.com/hertz-contrib/csrf v0.1.1
 	github.com/hertz-contrib/jwt v1.0.2
+	github.com/hertz-contrib/sessions v1.0.3
 	github.com/joho/godotenv v1.5.1
 	github.com/kitex-contrib/obs-opentelemetry/logging/logrus v0.0.0-20241120035129-55da83caab1b
 	github.com/kr/pretty v0.3.1
@@ -27,7 +29,7 @@ require (
 )
 
 require (
-	github.com/apache/thrift v0.13.0 // indirect
+	github.com/apache/thrift v0.16.0 // indirect
 	github.com/armon/go-metrics v0.4.1 // indirect
 	github.com/bytedance/go-tagexpr/v2 v2.9.2 // indirect
 	github.com/bytedance/gopkg v0.1.1 // indirect
@@ -52,7 +54,11 @@ require (
 	github.com/go-sql-driver/mysql v1.7.0 // indirect
 	github.com/golang-jwt/jwt/v4 v4.4.1 // indirect
 	github.com/golang/protobuf v1.5.4 // indirect
+	github.com/gomodule/redigo v2.0.0+incompatible // indirect
 	github.com/google/pprof v0.0.0-20240727154555-813a5fbdbec8 // indirect
+	github.com/gorilla/context v1.1.2 // indirect
+	github.com/gorilla/securecookie v1.1.2 // indirect
+	github.com/gorilla/sessions v1.2.2 // indirect
 	github.com/hashicorp/errwrap v1.1.0 // indirect
 	github.com/hashicorp/go-cleanhttp v0.5.2 // indirect
 	github.com/hashicorp/go-hclog v1.5.0 // indirect
