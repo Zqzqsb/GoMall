@@ -11,6 +11,7 @@ import (
 	"github.com/cloudwego/hertz/pkg/app"          // Hertz 框架的 app 包，处理请求上下文
 	"github.com/cloudwego/hertz/pkg/common/hlog"  // Hertz 的日志包
 	"github.com/cloudwego/hertz/pkg/common/utils" // Hertz 的工具包，包含辅助函数
+	"github.com/cloudwego/hertz/pkg/protocol"
 	"github.com/cloudwego/hertz/pkg/protocol/consts"
 	"github.com/hertz-contrib/jwt" // Hertz 的 JWT 中间件包
 	"zqzqsb.com/gomall/app/user/biz/model"
@@ -42,6 +43,17 @@ func InitJwt() {
 		TokenHeadName: "Bearer",                                           // JWT 在请求头中的前缀
 		// 自定义登录成功后的响应格式
 		LoginResponse: func(ctx context.Context, c *app.RequestContext, code int, token string, expire time.Time) {
+			// 直接set一个http only cookie 给客户端
+			c.SetCookie(
+				"jwt", // Cookie名称
+				token, // Cookie值
+				3600,  // 过期时间(秒)
+				"/",   // 路径
+				"",    // 域名(留空表示当前域)
+				protocol.CookieSameSiteDefaultMode,
+				true, // Secure
+				true, // HttpOnly
+			)
 			c.JSON(http.StatusOK, utils.H{
 				"code":    code,                        // 状态码
 				"token":   token,                       // 生成的 JWT Token
