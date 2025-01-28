@@ -76,11 +76,7 @@ func (t *transHandler) OnRead(ctx context.Context, conn net.Conn) error {
 func initHertz() *route.Engine {
 	h := hertzServer.New(hertzServer.WithIdleTimeout(0))
 	log.Println("init hertz")
-
-	// 注册 session 和 csrf
-	mw.InitSession(h)
-	mw.InitCSRF(h)
-
+	
 	// 配置 CORS
 	h.Use(cors.New(cors.Config{
 		AllowAllOrigins: true,
@@ -89,17 +85,26 @@ func initHertz() *route.Engine {
 		ExposeHeaders:   []string{"Content-Length"},
 		MaxAge:          12 * time.Hour,
 	}))
+
+
+	// 注册 session 和 csrf
+	mw.InitJwt()
+	mw.InitSession(h)
+	mw.InitCSRF(h)
+
 	// add a ping route to test
 	h.GET("/ping", func(c context.Context, ctx *app.RequestContext) {
 		ctx.JSON(consts.StatusOK, utils.H{"ping": "pong"})
 	})
 	router.GeneratedRegister(h)
+	
 	if err := h.Engine.Init(); err != nil {
 		panic(err)
 	}
 	if err := h.Engine.MarkAsRunning(); err != nil {
 		panic(err)
 	}
+	
 	return h.Engine
 }
 
@@ -138,8 +143,6 @@ var hertzEngine *route.Engine
 
 func init() {
 
-	mw.InitJwt()
-	
 	hertzEngine = initHertz()
 	serviceID := "user-http-001"
 	serviceName := "user-service-http"
