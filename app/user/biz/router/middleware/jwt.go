@@ -29,10 +29,15 @@ func InitJwt() {
 	var err error
 	// 创建新的 JWT 中间件实例并配置相关参数
 	JwtMiddleware, err = jwt.New(&jwt.HertzJWTMiddleware{
-		Realm:         "test zone",                                        // 认证领域，用于在 WWW-Authenticate 头中返回
-		Key:           []byte("secret key"),                               // 用于签名 JWT 的密钥，请确保使用足够复杂且安全的密钥
-		Timeout:       time.Hour,                                          // JWT 的有效期，此处设置为 1 小时
-		MaxRefresh:    time.Hour,                                          // 允许刷新 JWT 的最大时间，此处设置为 1 小时
+		Realm:      "test zone",          // 认证领域，用于在 WWW-Authenticate 头中返回
+		Key:        []byte("secret key"), // 用于签名 JWT 的密钥，请确保使用足够复杂且安全的密钥
+		Timeout:    time.Hour,            // JWT 的有效期，此处设置为 1 小时
+		MaxRefresh: time.Hour,            // 允许刷新 JWT 的最大时间，此处设置为 1 小时
+		// 表示在解析请求时，会尝试从以下几处获取 Token：
+		// HTTP Header 中的 Authorization 字段
+		// URL 查询参数 ?token=xxx
+		// Cookie 名为 jwt
+		// （按照这个顺序依次查找）
 		TokenLookup:   "header: Authorization, query: token, cookie: jwt", // 定义从哪里查找 JWT
 		TokenHeadName: "Bearer",                                           // JWT 在请求头中的前缀
 		// 自定义登录成功后的响应格式
