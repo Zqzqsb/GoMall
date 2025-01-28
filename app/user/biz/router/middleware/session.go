@@ -1,6 +1,8 @@
 package mw
 
 import (
+	"log"
+
 	"github.com/cloudwego/hertz/pkg/app/server"
 	"github.com/hertz-contrib/sessions"
 	"github.com/hertz-contrib/sessions/redis"
@@ -17,4 +19,5 @@ func InitSession(h *server.Hertz) {
 		panic(err)
 	}
 	h.Use(sessions.New("hertz-session", store))
+	log.Println("init session success")
 }

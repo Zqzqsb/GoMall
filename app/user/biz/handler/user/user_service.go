@@ -8,6 +8,7 @@ import (
 
 	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/cloudwego/hertz/pkg/protocol/consts"
+	"github.com/hertz-contrib/csrf"
 	"zqzqsb.com/gomall/app/user/biz/service"
 	user "zqzqsb.com/gomall/app/user/kitex_gen/user"
 )
@@ -69,6 +70,7 @@ func Hello(ctx context.Context, c *app.RequestContext) {
 	}
 
 	resp := new(user.HelloResp)
-	resp.RespBody = "Hello from user service!!"
+	csrfToken := csrf.GetToken(c)
+	resp.RespBody = csrfToken
 	c.JSON(consts.StatusOK, resp)
 }

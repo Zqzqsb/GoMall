@@ -41,7 +41,7 @@ func InitJwt() {
 				"code":    code,                        // 状态码
 				"token":   token,                       // 生成的 JWT Token
 				"expire":  expire.Format(time.RFC3339), // 过期时间
-				"message": "success",                   // 消息
+				"message": "success",
 			})
 		},
 		// 认证函数，用于验证用户登录信息

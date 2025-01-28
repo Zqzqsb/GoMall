@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"errors"
+	"log"
 
 	"golang.org/x/crypto/bcrypt"
 	"zqzqsb.com/gomall/app/user/biz/dal/mysql"
@@ -21,6 +22,7 @@ func NewLoginService(ctx context.Context) *LoginService {
 func (s *LoginService) Run(req *user.LoginReq) (resp *user.LoginResp, err error) {
 	// Finish your business logic.
 
+	log.Println(req.String())
 	// verify empty
 	if req.Email == "" || req.Password == "" {
 		return nil, errors.New("empty Email or Password")
