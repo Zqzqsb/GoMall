@@ -90,6 +90,7 @@ func Hello(ctx context.Context, c *app.RequestContext) {
 	// 5. 返回响应
 	resp := &user.HelloResp{
 		RespBody: csrfToken,
+		UserId:   userID,
 	}
 	c.JSON(consts.StatusOK, resp)
 }

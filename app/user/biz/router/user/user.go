@@ -16,10 +16,19 @@ import (
 
 // Register register routes based on the IDL 'api.${HTTP Method}' annotation.
 func Register(r *server.Hertz) {
+    publicGroup := r.Group("/", rootMw()...)
+    {
+        publicGroup.POST("/login", _loginMw()...)
+        publicGroup.POST("/register", append(_registerMw(), user.Register)...)
+    }
 
-	root := r.Group("/", rootMw()...)
-	root.POST("/login", mw.JwtMiddleware.LoginHandler) 
-	root.POST("/register", append(_registerMw(), user.Register)...)
-	root.GET("/hello", append(_helloMw(), user.Hello)...)
-
+    // 2. 私有路由组（需要 JWT）
+    privateGroup := r.Group("/", rootMw()...)
+    {
+        // 对 privateGroup 启用 JWT 中间件
+		
+		privateGroup.Use(mw.JwtMiddleware.MiddlewareFunc())
+        privateGroup.GET("/hello", append(_helloMw(), user.Hello)...)
+        // ... 其他需要鉴权的路由
+    }
 }

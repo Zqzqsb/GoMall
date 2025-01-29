@@ -93,7 +93,6 @@ func initHertz() *route.Engine {
 
 	// 注册 session 和 csrf
 	mw.InitJwt()
-	h.Use(mw.JwtMiddleware.MiddlewareFunc())
 
 	mw.InitSession(h)
 	mw.InitCSRF(h)

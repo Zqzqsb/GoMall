@@ -28,6 +28,7 @@ message HelloReq {
 
 message HelloResp {
     string RespBody = 1;
+    int64 user_id = 2;
 }
 
 service UserService {

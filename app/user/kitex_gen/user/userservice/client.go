@@ -4,10 +4,8 @@ package userservice
 
 import (
 	"context"
-
 	client "github.com/cloudwego/kitex/client"
 	callopt "github.com/cloudwego/kitex/client/callopt"
-	"github.com/cloudwego/kitex/transport"
 	user "zqzqsb.com/gomall/app/user/kitex_gen/user"
 )
 
@@ -24,8 +22,7 @@ func NewClient(destService string, opts ...client.Option) (Client, error) {
 	options = append(options, client.WithDestService(destService))
 
 	options = append(options, opts...)
-	// Use GRPC as the default transport protocol.
-	options = append(options, client.WithTransportProtocol(transport.GRPC))
+
 	kc, err := client.NewClient(serviceInfo(), options...)
 	if err != nil {
 		return nil, err

@@ -95,7 +95,7 @@ func InitJwt() {
 			if !ok {
 				// 万一断言失败，也可视为未登录或解析失败
 				log.Printf("invalid identity in token")
-				return nil
+				return "anonymous"
 			}
 			// 再转成 uint / int64
 			log.Printf("identity in token: %v", f64)
