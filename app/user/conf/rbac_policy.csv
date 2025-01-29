@@ -1,5 +1,11 @@
-p, "1", /hello, GET
-p, "*", /login, GET
-p, "*", /login, POST
-p, "*", /register, GET
-p, "*", /register, POST
+# 正常权限规则
+p, "1", /hello, GET, allow
+p, "6", /hello, GET, allow
+p, "*", /login, GET, allow
+p, "*", /login, POST, allow
+p, "*", /register, GET, allow
+p, "*", /register, POST, allow
+# 正则表达式：允许用户访问自己的资源
+p, "*", ^/api/users/[0-9]+/profile, GET, allow
+# 黑名单
+p, "6", .*, .*, deny
