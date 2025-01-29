@@ -97,13 +97,6 @@ func initHertz() *route.Engine {
 	mw.InitSession(h)
 	mw.InitCSRF(h)
 
-	// 注册 casbin 中间件
-	enforce, err := mw.InitCasbin()
-	if err != nil {
-		panic(err)
-	}
-	h.Use(mw.NewCasbinMiddleware(enforce))
-
 	router.GeneratedRegister(h)
 	if err := h.Engine.Init(); err != nil {
 		panic(err)

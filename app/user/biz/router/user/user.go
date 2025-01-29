@@ -25,9 +25,15 @@ func Register(r *server.Hertz) {
     // 2. 私有路由组（需要 JWT）
     privateGroup := r.Group("/", rootMw()...)
     {
-        // 对 privateGroup 启用 JWT 中间件
-		
+
+		// 先注册 jwt 中间件
 		privateGroup.Use(mw.JwtMiddleware.MiddlewareFunc())
+		// 再注册 casbin 中间件
+		enforce, err := mw.InitCasbin()
+		if err != nil {
+			panic(err)
+		}
+		privateGroup.Use(mw.NewCasbinMiddleware(enforce))
         privateGroup.GET("/hello", append(_helloMw(), user.Hello)...)
         // ... 其他需要鉴权的路由
     }
