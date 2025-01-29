@@ -5,6 +5,7 @@ package user
 import (
 	"github.com/cloudwego/hertz/pkg/app/server"
 	user "zqzqsb.com/gomall/app/user/biz/handler/user"
+	mw "zqzqsb.com/gomall/app/user/biz/router/middleware"
 )
 
 /*
@@ -17,9 +18,8 @@ import (
 func Register(r *server.Hertz) {
 
 	root := r.Group("/", rootMw()...)
-	root.GET("/hello", append(_helloMw(), user.Hello)...)
-	root.POST("/login", _loginMw()...) 
-	// r.POST("/login" , mw.JwtMiddleware.LoginHandler)
+	root.POST("/login", mw.JwtMiddleware.LoginHandler) 
 	root.POST("/register", append(_registerMw(), user.Register)...)
-	
+	root.GET("/hello", append(_helloMw(), user.Hello)...)
+
 }

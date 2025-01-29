@@ -3,6 +3,7 @@ package mw // 定义包名为 mw，通常用于存放中间件相关的代码
 import (
 	"context"
 	"fmt"
+	"log"
 	"net/http"
 	"time"
 
@@ -14,7 +15,6 @@ import (
 	"github.com/cloudwego/hertz/pkg/protocol"
 	"github.com/cloudwego/hertz/pkg/protocol/consts"
 	"github.com/hertz-contrib/jwt" // Hertz 的 JWT 中间件包
-	"zqzqsb.com/gomall/app/user/biz/model"
 	"zqzqsb.com/gomall/app/user/biz/service"
 	"zqzqsb.com/gomall/app/user/kitex_gen/user"
 )
@@ -39,8 +39,8 @@ func InitJwt() {
 		// URL 查询参数 ?token=xxx
 		// Cookie 名为 jwt
 		// （按照这个顺序依次查找）
-		TokenLookup:   "header: Authorization, query: token, cookie: jwt", // 定义从哪里查找 JWT
-		TokenHeadName: "Bearer",                                           // JWT 在请求头中的前缀
+		TokenLookup:   "cookie: jwt", // 定义从哪里查找 JWT
+		TokenHeadName: "Bearer",      // JWT 在请求头中的前缀
 		// 自定义登录成功后的响应格式
 		LoginResponse: func(ctx context.Context, c *app.RequestContext, code int, token string, expire time.Time) {
 			// 直接set一个http only cookie 给客户端
@@ -73,28 +73,49 @@ func InitJwt() {
 			LoginService := service.NewLoginService(ctx)
 			resp, err := LoginService.Run(&req)
 			if err != nil {
-				c.String(consts.StatusInternalServerError, fmt.Sprintf("Registration failed: %v", err))
+				c.String(consts.StatusInternalServerError, fmt.Sprintf("Login failed: %v", err))
 				return nil, err
 			}
 			return resp.UserId, nil
 		},
 		IdentityKey: IdentityKey, // 设置用于标识用户身份的键
-		// 从 JWT 载荷中提取用户身份信息
+		// 从 JWT 载荷中提取用户身份信息 当挂载中间键时 会自动提取cookie中的jwt到ctx中
 		IdentityHandler: func(ctx context.Context, c *app.RequestContext) interface{} {
-			claims := jwt.ExtractClaims(ctx, c) // 提取 JWT 载荷中的声明
-			return &model.User{
-				ID: claims[IdentityKey].(uint), // 使用声明中的身份键获取用户ID
+			claims := jwt.ExtractClaims(ctx, c)
+			// 先判断有没有 "identity" 字段
+			val, ok := claims[IdentityKey]
+			if !ok {
+				// 这里说明没有 identity，可能是未携带 token
+				// 你可以选择直接返回 nil，或者返回一个默认 user
+				log.Printf("no identity in token")
+				return nil
 			}
+			// 再断言为 float64 (JWT 解析数字通常变成 float64)
+			f64, ok := val.(float64)
+			if !ok {
+				// 万一断言失败，也可视为未登录或解析失败
+				log.Printf("invalid identity in token")
+				return nil
+			}
+			// 再转成 uint / int64
+			log.Printf("identity in token: %v", f64)
+			return int64(f64)
 		},
 		// 将用户数据转换为 JWT 载荷中的声明
 		PayloadFunc: func(data interface{}) jwt.MapClaims {
-			if v, ok := data.(*model.User); ok {
-				return jwt.MapClaims{
-					IdentityKey: v.ID, // 将用户ID存储在 JWT 载荷中
-				}
+			switch v := data.(type) {
+			case uint:
+				return jwt.MapClaims{IdentityKey: v}
+			case int64:
+				return jwt.MapClaims{IdentityKey: v}
+			case int32:
+				// 这里把 int32 转成 int64 或直接存 float64
+				return jwt.MapClaims{IdentityKey: int64(v)}
+			default:
+				return jwt.MapClaims{}
 			}
-			return jwt.MapClaims{} // 返回空的声明
 		},
+
 		// 自定义 HTTP 状态消息函数，用于记录错误日志并返回错误消息
 		HTTPStatusMessageFunc: func(e error, ctx context.Context, c *app.RequestContext) string {
 			hlog.CtxErrorf(ctx, "jwt biz err = %+v", e.Error()) // 记录错误日志

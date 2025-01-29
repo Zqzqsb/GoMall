@@ -5,6 +5,7 @@ package user
 import (
 	"context"
 	"fmt"
+	"log"
 
 	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/cloudwego/hertz/pkg/protocol/consts"
@@ -48,6 +49,9 @@ func Login(ctx context.Context, c *app.RequestContext) {
 		return
 	}
 
+	userID := c.GetString("identity")
+	log.Println("user:", userID)
+
 	LoginService := service.NewLoginService(ctx)
 	resp, err := LoginService.Run(&req)
 	if err != nil {
@@ -61,16 +65,31 @@ func Login(ctx context.Context, c *app.RequestContext) {
 // Hello .
 // @router /hello [GET]
 func Hello(ctx context.Context, c *app.RequestContext) {
-	var err error
+	// 1. Bind & Validate 请求参数
 	var req user.HelloReq
-	err = c.BindAndValidate(&req)
-	if err != nil {
+	if err := c.BindAndValidate(&req); err != nil {
 		c.String(consts.StatusBadRequest, err.Error())
 		return
 	}
 
-	resp := new(user.HelloResp)
+	// 2. 打印当前请求中所有的 Cookie
+	cookies := c.Request.Header.FullCookie() // 获取所有 Cookies
+	log.Println("cookies:", string(cookies))
+
+	// 如果只想获取特定 Cookie（比如 "jwt"），可以：
+	jwtCookie := c.Request.Header.Cookie("jwt")
+	log.Println("jwt Cookie Value:", string(jwtCookie))
+
+	// 3. 打印当前用户ID（从 JWT 中获取）
+	userID := c.GetInt64("identity")
+	log.Println("user:", userID)
+
+	// 4. 获取 CSRF Token
 	csrfToken := csrf.GetToken(c)
-	resp.RespBody = csrfToken
+
+	// 5. 返回响应
+	resp := &user.HelloResp{
+		RespBody: csrfToken,
+	}
 	c.JSON(consts.StatusOK, resp)
 }

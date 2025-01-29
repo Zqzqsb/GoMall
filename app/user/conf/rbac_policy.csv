@@ -1,0 +1,5 @@
+p, anonymous, /login, GET
+p, anonymous, /login, POST
+p, anonymous, /register, GET
+p, anonymous, /register, POST
+p, anonymous, /hello, GET
