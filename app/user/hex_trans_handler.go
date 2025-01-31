@@ -84,11 +84,12 @@ func initHertz() *route.Engine {
 
 	// 配置 CORS
 	h.Use(cors.New(cors.Config{
-		AllowAllOrigins: true,
-		AllowMethods:    []string{"POST", "GET"},
-		AllowHeaders:    []string{"*"},
-		ExposeHeaders:   []string{"Content-Length"},
-		MaxAge:          12 * time.Hour,
+		AllowOrigins:     []string{"http://192.168.110.112:5173"},
+		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"},
+		AllowHeaders:     []string{"Origin", "Content-Length", "Content-Type", "Authorization", "csrf"},
+		AllowCredentials: true,
+		ExposeHeaders:    []string{"Content-Length"},
+		MaxAge:           12 * time.Hour,
 	}))
 
 	// 注册 session 和 csrf
