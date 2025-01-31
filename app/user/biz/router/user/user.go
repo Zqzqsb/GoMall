@@ -20,6 +20,9 @@ func Register(r *server.Hertz) {
     {
         publicGroup.POST("/login", _loginMw()...)
         publicGroup.POST("/register", append(_registerMw(), user.Register)...)
+
+        publicGroup.GET("/hello", append(_helloMw(), user.Hello)...)
+		
     }
 
     // 2. 私有路由组（需要 JWT）
@@ -34,7 +37,6 @@ func Register(r *server.Hertz) {
 			panic(err)
 		}
 		privateGroup.Use(mw.NewCasbinMiddleware(enforce))
-        privateGroup.GET("/hello", append(_helloMw(), user.Hello)...)
         // ... 其他需要鉴权的路由
     }
 }
