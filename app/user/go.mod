@@ -5,9 +5,9 @@ go 1.22.0
 replace github.com/apache/thrift => github.com/apache/thrift v0.13.0
 
 require (
+	github.com/casbin/casbin/v2 v2.103.0
 	github.com/cloudwego/fastpb v0.0.5
 	github.com/cloudwego/hertz v0.9.3
-	github.com/cloudwego/hertz-examples/bizdemo/hertz_session v0.0.0-20250114035118-f78605978eea
 	github.com/cloudwego/kitex v0.11.3
 	github.com/hashicorp/consul/api v1.30.0
 	github.com/hertz-contrib/cors v0.1.0
@@ -36,7 +36,6 @@ require (
 	github.com/bytedance/gopkg v0.1.1 // indirect
 	github.com/bytedance/sonic v1.12.2 // indirect
 	github.com/bytedance/sonic/loader v0.2.0 // indirect
-	github.com/casbin/casbin/v2 v2.103.0 // indirect
 	github.com/casbin/govaluate v1.3.0 // indirect
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect
 	github.com/cloudwego/base64x v0.1.4 // indirect

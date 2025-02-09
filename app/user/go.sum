@@ -70,8 +70,6 @@ github.com/cloudwego/hertz v0.6.2/go.mod h1:2em2hGREvCBawsTQcQxyWBGVlCeo+N1pp2q0
 github.com/cloudwego/hertz v0.7.2/go.mod h1:WliNtVbwihWHHgAaIQEbVXl0O3aWj0ks1eoPrcEAnjs=
 github.com/cloudwego/hertz v0.9.3 h1:uajvLn6LjEPjUqN/ewUZtWoRQWa2es2XTELdqDlOYMw=
 github.com/cloudwego/hertz v0.9.3/go.mod h1:gGVUfJU/BOkJv/ZTzrw7FS7uy7171JeYIZvAyV3wS3o=
-github.com/cloudwego/hertz-examples/bizdemo/hertz_session v0.0.0-20250114035118-f78605978eea h1:93lXn4VO9F98OKlA5M8gd5c6AWaQszuIqGBQurM70KM=
-github.com/cloudwego/hertz-examples/bizdemo/hertz_session v0.0.0-20250114035118-f78605978eea/go.mod h1:I2qxzcZSczqwYxotkseqNxweIVIbswA1qkopNUmC10Q=
 github.com/cloudwego/iasm v0.2.0 h1:1KNIy1I1H9hNNFEEH3DVnI4UujN+1zjpuk6gwHLTssg=
 github.com/cloudwego/iasm v0.2.0/go.mod h1:8rXZaNYT2n95jn+zTI1sDr+IgcD2GVs0nlbbQPiEFhY=
 github.com/cloudwego/kitex v0.11.3 h1:Qy1GtyuNbygMpwnMw+Aj1iS7fSd0IO7CzxtpZrRJ+Jc=
