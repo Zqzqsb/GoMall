@@ -9,6 +9,7 @@ import (
 
 type CommonServerSuite struct {
 	CurrentServiceName string
+	RegisteryAddr      string
 }
 
 func (s *CommonServerSuite) Options() []server.Option {

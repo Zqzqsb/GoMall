@@ -14,10 +14,22 @@ import (
 	"zqzqsb.com/gomall/app/user/biz/dal"
 	"zqzqsb.com/gomall/app/user/conf"
 	"zqzqsb.com/gomall/app/user/kitex_gen/user/userservice"
+	"zqzqsb.com/gomall/common/mtl"
+	"zqzqsb.com/gomall/common/serversuite"
+)
+
+var (
+	// rigister server to consul
+	serviceID      = "user-rpc-001"
+	serviceName    = "user-service-rpc"
+	serviceAddress = "192.168.110.112"
+	servicePort    = 8888
+	consulAddr     = "127.0.0.1:8500"
 )
 
 func main() {
 	err := godotenv.Load()
+	mtl.InitMetrics(serviceName, conf.GetConf().Kitex.MetricsPort, consulAddr)
 	if err != nil {
 		klog.Error(err.Error())
 	}
@@ -45,17 +57,14 @@ func kitexInit() (opts []server.Option) {
 		panic(err)
 	}
 	opts = append(opts, server.WithServiceAddr(addr))
-
+	opts = append(opts, server.WithSuite(&serversuite.CommonServerSuite{
+		CurrentServiceName: serviceName,
+		RegisteryAddr:      consulAddr,
+	}))
 	// service info
 	opts = append(opts, server.WithServerBasicInfo(&rpcinfo.EndpointBasicInfo{
 		ServiceName: conf.GetConf().Kitex.Service,
 	}))
-
-	// rigister server to consul
-	serviceID := "user-rpc-001"
-	serviceName := "user-service-rpc"
-	serviceAddress := "192.168.110.112"
-	servicePort := 8888
 
 	registerServiceWithConsul(serviceID, serviceName, serviceAddress, servicePort)
 
@@ -65,12 +74,12 @@ func kitexInit() (opts []server.Option) {
 	klog.SetLevel(conf.LogLevel())
 	asyncWriter := &zapcore.BufferedWriteSyncer{
 		WS: zapcore.AddSync(&lumberjack.Logger{
-			Filename:	conf.GetConf().Kitex.LogFileName,
-			MaxSize:	conf.GetConf().Kitex.LogMaxSize,
-			MaxBackups:	conf.GetConf().Kitex.LogMaxBackups,
-			MaxAge:		conf.GetConf().Kitex.LogMaxAge,
+			Filename:   conf.GetConf().Kitex.LogFileName,
+			MaxSize:    conf.GetConf().Kitex.LogMaxSize,
+			MaxBackups: conf.GetConf().Kitex.LogMaxBackups,
+			MaxAge:     conf.GetConf().Kitex.LogMaxAge,
 		}),
-		FlushInterval:	time.Minute,
+		FlushInterval: time.Minute,
 	}
 	klog.SetOutput(asyncWriter)
 	server.RegisterShutdownHook(func() {

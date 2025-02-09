@@ -6,6 +6,7 @@ kitex:
   log_max_size: 10
   log_max_age: 3
   log_max_backups: 50
+  metrics_port: ":9993"
 
 registry:
   registry_address:
