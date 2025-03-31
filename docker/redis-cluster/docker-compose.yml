@@ -1,0 +1,248 @@
+services:
+  # Redis 集群节点
+  redis-1:
+    image: redis:7.0
+    container_name: redis-1
+    command: redis-server /usr/local/etc/redis/redis.conf
+    volumes:
+      - ./config/redis-1.conf:/usr/local/etc/redis/redis.conf
+      - ./data/redis-1:/data
+    ports:
+      - "6379:6379"
+      - "16379:16379"
+    networks:
+      redis-net:
+        ipv4_address: 10.10.0.11
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 3
+
+  redis-2:
+    image: redis:7.0
+    container_name: redis-2
+    command: redis-server /usr/local/etc/redis/redis.conf
+    volumes:
+      - ./config/redis-2.conf:/usr/local/etc/redis/redis.conf
+      - ./data/redis-2:/data
+    ports:
+      - "6380:6379"
+      - "16380:16379"
+    networks:
+      redis-net:
+        ipv4_address: 10.10.0.12
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 3
+
+  redis-3:
+    image: redis:7.0
+    container_name: redis-3
+    command: redis-server /usr/local/etc/redis/redis.conf
+    volumes:
+      - ./config/redis-3.conf:/usr/local/etc/redis/redis.conf
+      - ./data/redis-3:/data
+    ports:
+      - "6381:6379"
+      - "16381:16379"
+    networks:
+      redis-net:
+        ipv4_address: 10.10.0.13
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 3
+
+  redis-4:
+    image: redis:7.0
+    container_name: redis-4
+    command: redis-server /usr/local/etc/redis/redis.conf
+    volumes:
+      - ./config/redis-4.conf:/usr/local/etc/redis/redis.conf
+      - ./data/redis-4:/data
+    ports:
+      - "6382:6379"
+      - "16382:16379"
+    networks:
+      redis-net:
+        ipv4_address: 10.10.0.14
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 3
+
+  redis-5:
+    image: redis:7.0
+    container_name: redis-5
+    command: redis-server /usr/local/etc/redis/redis.conf
+    volumes:
+      - ./config/redis-5.conf:/usr/local/etc/redis/redis.conf
+      - ./data/redis-5:/data
+    ports:
+      - "6383:6379"
+      - "16383:16379"
+    networks:
+      redis-net:
+        ipv4_address: 10.10.0.15
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 3
+
+  redis-6:
+    image: redis:7.0
+    container_name: redis-6
+    command: redis-server /usr/local/etc/redis/redis.conf
+    volumes:
+      - ./config/redis-6.conf:/usr/local/etc/redis/redis.conf
+      - ./data/redis-6:/data
+    ports:
+      - "6384:6379"
+      - "16384:16379"
+    networks:
+      redis-net:
+        ipv4_address: 10.10.0.16
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 3
+
+  # Redis 集群创建服务
+  redis-cluster-creator:
+    image: redis:7.0
+    container_name: redis-cluster-creator
+    command: >
+      bash -c "
+        echo 'Waiting for Redis nodes to start...' &&
+        sleep 10 &&
+        echo 'Creating Redis Cluster...' &&
+        redis-cli --cluster create 10.10.0.11:6379 10.10.0.12:6379 10.10.0.13:6379 10.10.0.14:6379 10.10.0.15:6379 10.10.0.16:6379 --cluster-replicas 1 --cluster-yes &&
+        echo 'Redis Cluster created successfully!'
+      "
+    networks:
+      - redis-net
+    depends_on:
+      - redis-1
+      - redis-2
+      - redis-3
+      - redis-4
+      - redis-5
+      - redis-6
+
+  # Redis Commander - Redis 可视化管理工具
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    container_name: redis-commander
+    environment:
+      - REDIS_HOSTS=redis-1:10.10.0.11:6379,redis-2:10.10.0.12:6379,redis-3:10.10.0.13:6379,redis-4:10.10.0.14:6379,redis-5:10.10.0.15:6379,redis-6:10.10.0.16:6379
+    ports:
+      - "8081:8081"
+    networks:
+      - redis-net
+    depends_on:
+      - redis-1
+      - redis-2
+      - redis-3
+      - redis-4
+      - redis-5
+      - redis-6
+
+  # Redis Exporter - 收集 Redis 指标
+  redis-exporter:
+    image: oliver006/redis_exporter:latest
+    container_name: redis-exporter
+    command: >
+      --redis.addr=redis://10.10.0.11:6379,redis://10.10.0.12:6379,redis://10.10.0.13:6379,redis://10.10.0.14:6379,redis://10.10.0.15:6379,redis://10.10.0.16:6379
+      --redis.file=/tmp/redis.password
+      --web.listen-address=:9121
+    ports:
+      - "9121:9121"
+    networks:
+      - redis-net
+    depends_on:
+      - redis-1
+      - redis-2
+      - redis-3
+      - redis-4
+      - redis-5
+      - redis-6
+
+  # Prometheus - 监控系统
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+    ports:
+      - "9091:9090"
+    networks:
+      - redis-net
+    depends_on:
+      - redis-exporter
+
+  # Grafana - 可视化监控面板
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning
+      - grafana_data:/var/lib/grafana
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+    ports:
+      - "3001:3000"
+    networks:
+      - redis-net
+    depends_on:
+      - prometheus
+
+networks:
+  redis-net:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 10.10.0.0/16
+
+volumes:
+  prometheus_data:
+  grafana_data:
