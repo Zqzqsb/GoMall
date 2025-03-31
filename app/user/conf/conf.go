@@ -5,6 +5,7 @@ import (
 	"os"
 	"path/filepath"
 	"sync"
+	"time"
 
 	"github.com/cloudwego/kitex/pkg/klog"
 	"github.com/kr/pretty"
@@ -18,11 +19,12 @@ var (
 )
 
 type Config struct {
-	Env      string
-	Kitex    Kitex    `yaml:"kitex"`
-	MySQL    MySQL    `yaml:"mysql"`
-	Redis    Redis    `yaml:"redis"`
-	Registry Registry `yaml:"registry"`
+	Env         string
+	Kitex       Kitex       `yaml:"kitex"`
+	MySQL       MySQL       `yaml:"mysql"`
+	Redis       Redis       `yaml:"redis"`
+	RedisCluster RedisCluster `yaml:"redis_cluster"`
+	Registry    Registry    `yaml:"registry"`
 }
 
 type MySQL struct {
@@ -34,6 +36,18 @@ type Redis struct {
 	Username string `yaml:"username"`
 	Password string `yaml:"password"`
 	DB       int    `yaml:"db"`
+}
+
+type RedisCluster struct {
+	Enabled         bool          `yaml:"enabled"`
+	Addrs           []string      `yaml:"addrs"`
+	Username        string        `yaml:"username"`
+	Password        string        `yaml:"password"`
+	MaxRetries      int           `yaml:"max_retries"`
+	MinRetryBackoff time.Duration `yaml:"min_retry_backoff"`
+	MaxRetryBackoff time.Duration `yaml:"max_retry_backoff"`
+	RouteByLatency  bool          `yaml:"route_by_latency"`
+	RouteRandomly   bool          `yaml:"route_randomly"`
 }
 
 type Kitex struct {
