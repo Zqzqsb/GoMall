@@ -1,0 +1,161 @@
+syntax = "proto3";
+
+package product;
+
+option go_package = "/product";
+import "api.proto";
+
+// 商品基本信息
+message Product {
+    int64 id = 1;                // 商品ID
+    string name = 2;             // 商品名称
+    string description = 3;      // 商品描述
+    int64 price = 4;             // 商品价格（单位：分）
+    int32 stock = 5;             // 库存数量
+    string image_url = 6;        // 主图URL
+    repeated string gallery = 7; // 图片集
+    string category = 8;         // 商品分类
+    bool is_on_sale = 9;         // 是否在售
+    int64 create_time = 10;      // 创建时间
+    int64 update_time = 11;      // 更新时间
+    map<string, string> attributes = 12; // 商品属性，如颜色、尺寸等
+    float rating = 13;           // 商品评分
+    int32 sales_count = 14;      // 销量
+}
+
+// 创建商品请求
+message CreateProductReq {
+    string name = 1;
+    string description = 2;
+    int64 price = 3;
+    int32 stock = 4;
+    string image_url = 5;
+    repeated string gallery = 6;
+    string category = 7;
+    bool is_on_sale = 8;
+    map<string, string> attributes = 9;
+}
+
+// 创建商品响应
+message CreateProductResp {
+    int64 product_id = 1;
+}
+
+// 更新商品请求
+message UpdateProductReq {
+    int64 id = 1;
+    string name = 2;
+    string description = 3;
+    int64 price = 4;
+    int32 stock = 5;
+    string image_url = 6;
+    repeated string gallery = 7;
+    string category = 8;
+    bool is_on_sale = 9;
+    map<string, string> attributes = 10;
+}
+
+// 更新商品响应
+message UpdateProductResp {
+    bool success = 1;
+}
+
+// 获取商品详情请求
+message GetProductReq {
+    int64 id = 1;
+}
+
+// 获取商品详情响应
+message GetProductResp {
+    Product product = 1;
+}
+
+// 删除商品请求
+message DeleteProductReq {
+    int64 id = 1;
+}
+
+// 删除商品响应
+message DeleteProductResp {
+    bool success = 1;
+}
+
+// 商品列表请求
+message ListProductsReq {
+    string category = 1;         // 可选，按分类筛选
+    string keyword = 2;          // 可选，搜索关键词
+    bool on_sale_only = 3;       // 可选，只显示在售商品
+    int32 page = 4;              // 页码，从1开始
+    int32 page_size = 5;         // 每页数量
+    string sort_by = 6;          // 排序字段：price, create_time, sales, rating
+    bool ascending = 7;          // 是否升序排列
+    int64 min_price = 8;         // 最低价格（可选）
+    int64 max_price = 9;         // 最高价格（可选）
+}
+
+// 商品列表响应
+message ListProductsResp {
+    repeated Product products = 1;
+    int32 total = 2;             // 总商品数
+    int32 page = 3;              // 当前页码
+    int32 page_size = 4;         // 每页数量
+    int32 total_pages = 5;       // 总页数
+}
+
+// 商品分类请求
+message GetCategoriesReq {
+    // 空请求
+}
+
+// 商品分类响应
+message GetCategoriesResp {
+    repeated string categories = 1;
+}
+
+// 商品库存更新请求（内部使用，不对外暴露）
+message UpdateStockReq {
+    int64 product_id = 1;
+    int32 quantity = 2;          // 正数增加库存，负数减少库存
+}
+
+// 商品库存更新响应
+message UpdateStockResp {
+    bool success = 1;
+    int32 current_stock = 2;
+}
+
+// 商品服务
+service ProductService {
+    // 创建商品
+    rpc CreateProduct(CreateProductReq) returns (CreateProductResp) {
+        option (api.post) = "/admin/products";
+    }
+    
+    // 更新商品
+    rpc UpdateProduct(UpdateProductReq) returns (UpdateProductResp) {
+        option (api.put) = "/admin/products/{id}";
+    }
+    
+    // 获取商品详情
+    rpc GetProduct(GetProductReq) returns (GetProductResp) {
+        option (api.get) = "/products/{id}";
+    }
+    
+    // 删除商品
+    rpc DeleteProduct(DeleteProductReq) returns (DeleteProductResp) {
+        option (api.delete) = "/admin/products/{id}";
+    }
+    
+    // 获取商品列表
+    rpc ListProducts(ListProductsReq) returns (ListProductsResp) {
+        option (api.get) = "/products";
+    }
+    
+    // 获取所有商品分类
+    rpc GetCategories(GetCategoriesReq) returns (GetCategoriesResp) {
+        option (api.get) = "/products/categories";
+    }
+    
+    // 更新商品库存（内部使用，不对外暴露）
+    rpc UpdateStock(UpdateStockReq) returns (UpdateStockResp);
+}
