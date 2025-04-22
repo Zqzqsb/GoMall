@@ -9,6 +9,7 @@ services:
       - MYSQL_USER=gorm
       - MYSQL_PASSWORD=gorm
       - MYSQL_RANDOM_ROOT_PASSWORD="yes"
+    restart: unless-stopped
   # redis:
   #   image: "redis:latest"
   #   ports:

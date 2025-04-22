@@ -23,6 +23,7 @@ services:
         limits:
           cpus: "0.5"
           memory: "512M"
+    restart: unless-stopped
 
 # 自定义网络，确保各服务之间可以通信
 networks:

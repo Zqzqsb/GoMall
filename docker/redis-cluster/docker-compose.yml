@@ -17,6 +17,7 @@ services:
       resources:
         limits:
           memory: 1G
+    restart: unless-stopped
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 5s
@@ -40,6 +41,7 @@ services:
       resources:
         limits:
           memory: 1G
+    restart: unless-stopped
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 5s
@@ -63,6 +65,7 @@ services:
       resources:
         limits:
           memory: 1G
+    restart: unless-stopped
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 5s
@@ -86,6 +89,7 @@ services:
       resources:
         limits:
           memory: 1G
+    restart: unless-stopped
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 5s
@@ -109,6 +113,7 @@ services:
       resources:
         limits:
           memory: 1G
+    restart: unless-stopped
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 5s
@@ -132,6 +137,7 @@ services:
       resources:
         limits:
           memory: 1G
+    restart: unless-stopped
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 5s
@@ -159,6 +165,7 @@ services:
       - redis-4
       - redis-5
       - redis-6
+    restart: unless-stopped
 
   # Redis Commander - Redis 可视化管理工具
   redis-commander:
@@ -177,6 +184,7 @@ services:
       - redis-4
       - redis-5
       - redis-6
+    restart: unless-stopped
 
   # Redis Exporter - 收集 Redis 指标
   redis-exporter:
@@ -197,6 +205,7 @@ services:
       - redis-4
       - redis-5
       - redis-6
+    restart: unless-stopped
 
   # Prometheus - 监控系统
   prometheus:
@@ -216,6 +225,7 @@ services:
       - redis-net
     depends_on:
       - redis-exporter
+    restart: unless-stopped
 
   # Grafana - 可视化监控面板
   grafana:
@@ -234,6 +244,7 @@ services:
       - redis-net
     depends_on:
       - prometheus
+    restart: unless-stopped
 
 networks:
   redis-net:
