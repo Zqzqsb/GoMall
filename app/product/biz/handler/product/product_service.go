@@ -4,9 +4,11 @@ package product
 
 import (
 	"context"
+	"strconv"
 
 	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/cloudwego/hertz/pkg/protocol/consts"
+	"zqzqsb/gomall/app/product/biz/service"
 	product "zqzqsb/gomall/app/product/kitex_gen/product"
 )
 
@@ -21,7 +23,12 @@ func CreateProduct(ctx context.Context, c *app.RequestContext) {
 		return
 	}
 
-	resp := new(product.CreateProductResp)
+	// 调用服务层创建商品
+	resp, err := service.NewCreateProductService(ctx).Run(&req)
+	if err != nil {
+		c.String(consts.StatusInternalServerError, err.Error())
+		return
+	}
 
 	c.JSON(consts.StatusOK, resp)
 }
@@ -37,7 +44,21 @@ func UpdateProduct(ctx context.Context, c *app.RequestContext) {
 		return
 	}
 
-	resp := new(product.UpdateProductResp)
+	// 从路径参数获取商品ID
+	idStr := c.Param("id")
+	id, err := strconv.ParseInt(idStr, 10, 64)
+	if err != nil {
+		c.String(consts.StatusBadRequest, "Invalid product ID")
+		return
+	}
+	req.Id = id
+
+	// 调用服务层更新商品
+	resp, err := service.NewUpdateProductService(ctx).Run(&req)
+	if err != nil {
+		c.String(consts.StatusInternalServerError, err.Error())
+		return
+	}
 
 	c.JSON(consts.StatusOK, resp)
 }
@@ -53,7 +74,21 @@ func GetProduct(ctx context.Context, c *app.RequestContext) {
 		return
 	}
 
-	resp := new(product.GetProductResp)
+	// 从路径参数获取商品ID
+	idStr := c.Param("id")
+	id, err := strconv.ParseInt(idStr, 10, 64)
+	if err != nil {
+		c.String(consts.StatusBadRequest, "Invalid product ID")
+		return
+	}
+	req.Id = id
+
+	// 调用服务层获取商品详情
+	resp, err := service.NewGetProductService(ctx).Run(&req)
+	if err != nil {
+		c.String(consts.StatusInternalServerError, err.Error())
+		return
+	}
 
 	c.JSON(consts.StatusOK, resp)
 }
@@ -69,7 +104,21 @@ func DeleteProduct(ctx context.Context, c *app.RequestContext) {
 		return
 	}
 
-	resp := new(product.DeleteProductResp)
+	// 从路径参数获取商品ID
+	idStr := c.Param("id")
+	id, err := strconv.ParseInt(idStr, 10, 64)
+	if err != nil {
+		c.String(consts.StatusBadRequest, "Invalid product ID")
+		return
+	}
+	req.Id = id
+
+	// 调用服务层删除商品
+	resp, err := service.NewDeleteProductService(ctx).Run(&req)
+	if err != nil {
+		c.String(consts.StatusInternalServerError, err.Error())
+		return
+	}
 
 	c.JSON(consts.StatusOK, resp)
 }
@@ -85,7 +134,12 @@ func ListProducts(ctx context.Context, c *app.RequestContext) {
 		return
 	}
 
-	resp := new(product.ListProductsResp)
+	// 调用服务层获取商品列表
+	resp, err := service.NewListProductsService(ctx).Run(&req)
+	if err != nil {
+		c.String(consts.StatusInternalServerError, err.Error())
+		return
+	}
 
 	c.JSON(consts.StatusOK, resp)
 }
@@ -101,7 +155,12 @@ func GetCategories(ctx context.Context, c *app.RequestContext) {
 		return
 	}
 
-	resp := new(product.GetCategoriesResp)
+	// 调用服务层获取商品分类
+	resp, err := service.NewGetCategoriesService(ctx).Run(&req)
+	if err != nil {
+		c.String(consts.StatusInternalServerError, err.Error())
+		return
+	}
 
 	c.JSON(consts.StatusOK, resp)
 }

@@ -2,6 +2,8 @@ package service
 
 import (
 	"context"
+	
+	"zqzqsb/gomall/app/product/biz/dal/mysql"
 	product "zqzqsb/gomall/app/product/kitex_gen/product"
 )
 
@@ -12,9 +14,18 @@ func NewGetCategoriesService(ctx context.Context) *GetCategoriesService {
 	return &GetCategoriesService{ctx: ctx}
 }
 
-// Run create note info
+// Run get categories
 func (s *GetCategoriesService) Run(req *product.GetCategoriesReq) (resp *product.GetCategoriesResp, err error) {
-	// Finish your business logic.
+	// 从数据库获取所有商品分类
+	categories, err := mysql.GetCategories(mysql.DB)
+	if err != nil {
+		return nil, err
+	}
 
-	return
+	// 构建响应
+	resp = &product.GetCategoriesResp{
+		Categories: categories,
+	}
+
+	return resp, nil
 }
