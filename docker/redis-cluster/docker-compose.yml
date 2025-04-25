@@ -191,8 +191,12 @@ services:
     image: oliver006/redis_exporter:latest
     container_name: redis-exporter
     command: >
-      --redis.addr=redis://10.10.0.11:6379,redis://10.10.0.12:6379,redis://10.10.0.13:6379,redis://10.10.0.14:6379,redis://10.10.0.15:6379,redis://10.10.0.16:6379
-      --redis.file=/tmp/redis.password
+      --redis.addr=10.10.0.11:6379
+      --redis.addr=10.10.0.12:6379
+      --redis.addr=10.10.0.13:6379
+      --redis.addr=10.10.0.14:6379
+      --redis.addr=10.10.0.15:6379
+      --redis.addr=10.10.0.16:6379
       --web.listen-address=:9121
     ports:
       - "9121:9121"
