@@ -10,6 +10,7 @@ func InitTracing(serviceName string) provider.OtelProvider {
 		provider.WithServiceName(serviceName),
 		provider.WithInsecure(),
 		provider.WithEnableMetrics(false),
+		provider.WithExportEndpoint("localhost:4317"), // 添加 OpenTelemetry Collector 导出端点
 	)
 	return p
 }
