@@ -15,7 +15,7 @@ processors:
 
 exporters:
   prometheus:
-    endpoint: "0.0.0.0:8889"
+    endpoint: "0.0.0.0:8889"  # 保持容器内部端口不变
     namespace: "gomall"
     const_labels:
       app: "gomall"

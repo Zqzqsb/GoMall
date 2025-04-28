@@ -10,8 +10,8 @@ services:
       - ./otel-collector-config.yaml:/etc/otel-collector-config.yaml
     ports:
       - "1888:1888"   # pprof 扩展
-      - "8888:8888"   # Prometheus 指标
-      - "8889:8889"   # Prometheus exporter
+      - "8890:8888"   # Prometheus 指标
+      - "8891:8889"   # Prometheus exporter
       - "13133:13133" # 健康检查
       - "4317:4317"   # OTLP gRPC 接收器
       - "4318:4318"   # OTLP HTTP 接收器
@@ -51,11 +51,7 @@ services:
       - redis-net
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "wget", "-q", "--spider", "http://localhost:9411/zipkin/"]
-      interval: 5s
-      timeout: 1s
-      retries: 3
-      start_period: 10s
+      disable: true
 
 networks:
   otel-network:
