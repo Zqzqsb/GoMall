@@ -18,7 +18,24 @@ mysql:
   dsn: "%s:%s@tcp(%s:3306)/gorm?charset=utf8mb4&parseTime=True&loc=Local"
 
 redis:
-  address: "127.0.0.1:6379"
+  address: "127.0.0.1:6390"  # 使用 Redis 代理地址
   username: ""
   password: ""
   db: 0
+
+redis_cluster:
+  enabled: false  # 暂时设为 false，因为我们使用 Twemproxy
+  addrs:
+    - "127.0.0.1:6379"
+    - "127.0.0.1:6380"
+    - "127.0.0.1:6381"
+    - "127.0.0.1:6382"
+    - "127.0.0.1:6383"
+    - "127.0.0.1:6384"
+  username: ""
+  password: ""
+  max_retries: 3
+  min_retry_backoff: 8ms
+  max_retry_backoff: 512ms
+  route_by_latency: true
+  route_randomly: false
