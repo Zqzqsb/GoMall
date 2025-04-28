@@ -1,0 +1,182 @@
+syntax = "proto3";
+
+package pay;
+
+option go_package = "/pay";
+import "api.proto";
+import "cart.proto";
+
+// 支付方式枚举
+enum PaymentMethod {
+    PAYMENT_METHOD_UNSPECIFIED = 0;  // 未指定
+    PAYMENT_METHOD_ALIPAY = 1;       // 支付宝
+    PAYMENT_METHOD_WECHAT = 2;       // 微信支付
+    PAYMENT_METHOD_CREDIT_CARD = 3;  // 信用卡
+    PAYMENT_METHOD_BANK_TRANSFER = 4; // 银行转账
+}
+
+// 支付状态枚举
+enum PaymentStatus {
+    PAYMENT_STATUS_UNSPECIFIED = 0;  // 未指定
+    PAYMENT_STATUS_PENDING = 1;      // 待支付
+    PAYMENT_STATUS_PROCESSING = 2;   // 处理中
+    PAYMENT_STATUS_COMPLETED = 3;    // 已完成
+    PAYMENT_STATUS_FAILED = 4;       // 失败
+    PAYMENT_STATUS_REFUNDED = 5;     // 已退款
+    PAYMENT_STATUS_CANCELLED = 6;    // 已取消
+}
+
+// 支付订单
+message Payment {
+    int64 id = 1;                    // 支付ID
+    int64 user_id = 2;               // 用户ID
+    int64 order_id = 3;              // 关联的订单ID
+    string payment_no = 4;           // 支付单号
+    int64 amount = 5;                // 支付金额（单位：分）
+    PaymentMethod payment_method = 6; // 支付方式
+    PaymentStatus status = 7;        // 支付状态
+    string transaction_id = 8;       // 第三方支付交易ID
+    string callback_url = 9;         // 支付回调URL
+    string return_url = 10;          // 支付完成后跳转URL
+    int64 create_time = 11;          // 创建时间
+    int64 update_time = 12;          // 更新时间
+    int64 pay_time = 13;             // 支付时间
+    string client_ip = 14;           // 客户端IP
+    map<string, string> metadata = 15; // 元数据，存储支付相关的额外信息
+}
+
+// 创建支付请求
+message CreatePaymentReq {
+    int64 order_id = 1;              // 订单ID
+    PaymentMethod payment_method = 2; // 支付方式
+    string return_url = 3;           // 支付完成后跳转URL
+    map<string, string> metadata = 4; // 元数据
+}
+
+// 创建支付响应
+message CreatePaymentResp {
+    int64 payment_id = 1;            // 支付ID
+    string payment_no = 2;           // 支付单号
+    string pay_url = 3;              // 支付链接
+    string qr_code = 4;              // 支付二维码（Base64编码）
+}
+
+// 查询支付状态请求
+message QueryPaymentReq {
+    oneof identifier {
+        int64 payment_id = 1;        // 支付ID
+        string payment_no = 2;       // 支付单号
+    }
+}
+
+// 查询支付状态响应
+message QueryPaymentResp {
+    Payment payment = 1;             // 支付信息
+}
+
+// 取消支付请求
+message CancelPaymentReq {
+    oneof identifier {
+        int64 payment_id = 1;        // 支付ID
+        string payment_no = 2;       // 支付单号
+    }
+    string reason = 3;               // 取消原因
+}
+
+// 取消支付响应
+message CancelPaymentResp {
+    bool success = 1;                // 是否成功
+}
+
+// 支付回调请求
+message PaymentCallbackReq {
+    string payment_no = 1;           // 支付单号
+    string transaction_id = 2;       // 第三方支付交易ID
+    PaymentStatus status = 3;        // 支付状态
+    int64 amount = 4;                // 实际支付金额
+    string raw_data = 5;             // 原始回调数据
+    map<string, string> params = 6;  // 回调参数
+}
+
+// 支付回调响应
+message PaymentCallbackResp {
+    bool success = 1;                // 是否成功处理
+}
+
+// 退款请求
+message RefundReq {
+    oneof identifier {
+        int64 payment_id = 1;        // 支付ID
+        string payment_no = 2;       // 支付单号
+    }
+    int64 amount = 3;                // 退款金额（单位：分）
+    string reason = 4;               // 退款原因
+}
+
+// 退款响应
+message RefundResp {
+    bool success = 1;                // 是否成功
+    string refund_id = 2;            // 退款ID
+}
+
+// 获取用户支付列表请求
+message GetUserPaymentsReq {
+    int32 page = 1;                  // 页码，从1开始
+    int32 page_size = 2;             // 每页大小
+    PaymentStatus status = 3;        // 可选的状态过滤
+}
+
+// 获取用户支付列表响应
+message GetUserPaymentsResp {
+    repeated Payment payments = 1;   // 支付列表
+    int32 total = 2;                 // 总数
+    int32 page = 3;                  // 当前页码
+    int32 page_size = 4;             // 每页大小
+}
+
+// 从购物车创建支付请求
+message CreatePaymentFromCartReq {
+    repeated int64 cart_item_ids = 1; // 购物车项ID列表
+    PaymentMethod payment_method = 2; // 支付方式
+    string return_url = 3;           // 支付完成后跳转URL
+    string shipping_address_id = 4;  // 收货地址ID
+    map<string, string> metadata = 5; // 元数据
+}
+
+// 支付服务
+service PaymentService {
+    // 创建支付
+    rpc CreatePayment(CreatePaymentReq) returns (CreatePaymentResp) {
+        option (api.post) = "/payments";
+    }
+    
+    // 查询支付状态
+    rpc QueryPayment(QueryPaymentReq) returns (QueryPaymentResp) {
+        option (api.get) = "/payments/{payment_id}";
+    }
+    
+    // 取消支付
+    rpc CancelPayment(CancelPaymentReq) returns (CancelPaymentResp) {
+        option (api.post) = "/payments/{payment_id}/cancel";
+    }
+    
+    // 处理支付回调
+    rpc HandlePaymentCallback(PaymentCallbackReq) returns (PaymentCallbackResp) {
+        option (api.post) = "/payments/callback";
+    }
+    
+    // 申请退款
+    rpc RefundPayment(RefundReq) returns (RefundResp) {
+        option (api.post) = "/payments/{payment_id}/refund";
+    }
+    
+    // 获取用户支付列表
+    rpc GetUserPayments(GetUserPaymentsReq) returns (GetUserPaymentsResp) {
+        option (api.get) = "/user/payments";
+    }
+    
+    // 从购物车创建支付（会同时创建订单）
+    rpc CreatePaymentFromCart(CreatePaymentFromCartReq) returns (CreatePaymentResp) {
+        option (api.post) = "/payments/from-cart";
+    }
+}
