@@ -3,36 +3,45 @@
 ## 项目架构
 
 ```mermaid
-graph TD
-    Client[前端应用] --> ApiGateway[API 网关 / Hertz]
+flowchart TD
+    %% 设置节点样式
+    classDef client fill:#e6f7ff,stroke:#1890ff,stroke-width:2px
+    classDef gateway fill:#fff7e6,stroke:#fa8c16,stroke-width:2px  
+    classDef service fill:#f6ffed,stroke:#52c41a,stroke-width:2px
+    classDef database fill:#f9f0ff,stroke:#722ed1,stroke-width:2px
+    classDef infra fill:#fff2e8,stroke:#fa541c,stroke-width:2px
+    classDef monitor fill:#fcffe6,stroke:#a0d911,stroke-width:2px
+
+    %% 节点定义
+    Client[前端应用]:::client --> |HTTP| ApiGateway[API 网关 / Hertz]:::gateway
 
     subgraph 微服务
-        ApiGateway --> UserService[用户服务]
-        ApiGateway --> ProductService[商品服务]
-        ApiGateway --> CartService[购物车服务]
-        ApiGateway --> PaymentService[支付服务]
-        ApiGateway --> OrderService[订单服务]
+        ApiGateway -->|RPC| UserService[用户服务]:::service
+        ApiGateway -->|RPC| ProductService[商品服务]:::service
+        ApiGateway -->|RPC| CartService[购物车服务]:::service
+        ApiGateway -->|RPC| PaymentService[支付服务]:::service
+        ApiGateway -->|RPC| OrderService[订单服务]:::service
     end
 
     subgraph 基础设施
-        UserService --> DB[(MySQL)]
+        UserService --> DB[(MySQL)]:::database
         ProductService --> DB
         CartService --> DB
         PaymentService --> DB
         OrderService --> DB
 
-        UserService --> Cache[(Redis)]
+        UserService --> Cache[(Redis)]:::database
         CartService --> Cache
         PaymentService --> Cache
 
-        ApiGateway --> Registry[服务注册中心\nConsul]
+        ApiGateway --> Registry[服务注册中心\nConsul]:::infra
         UserService --> Registry
         ProductService --> Registry
         CartService --> Registry
         PaymentService --> Registry
         OrderService --> Registry
 
-        ApiGateway --> Tracing[链路追踪\nOpenTelemetry]
+        ApiGateway --> Tracing[链路追踪\nOpenTelemetry]:::infra
         UserService --> Tracing
         ProductService --> Tracing
         CartService --> Tracing
@@ -41,9 +50,12 @@ graph TD
     end
 
     subgraph 运维平台
-        Tracing --> Monitor[监控平台]
+        Tracing --> Monitor[监控平台]:::monitor
         Registry --> Monitor
     end
+
+    %% 设置连接线样式 - 直线
+    linkStyle default stroke:#666,stroke-width:1.5px
 ```
 
 ## 项目概述
