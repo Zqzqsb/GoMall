@@ -10,11 +10,9 @@ import (
 
 type CommonServerSuite struct {
 	CurrentServiceName string
-	RegisteryAddr      string
 }
 
 func (s *CommonServerSuite) Options() []server.Option {
-
 	opts := []server.Option{
 		server.WithServerBasicInfo(&rpcinfo.EndpointBasicInfo{
 			ServiceName: s.CurrentServiceName,

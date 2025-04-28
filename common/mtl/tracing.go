@@ -1,7 +1,6 @@
 package mtl
 
 import (
-	// ...
 	"github.com/hertz-contrib/obs-opentelemetry/provider"
 )
 
@@ -10,7 +9,8 @@ func InitTracing(serviceName string) provider.OtelProvider {
 		provider.WithServiceName(serviceName),
 		provider.WithInsecure(),
 		provider.WithEnableMetrics(false),
-		provider.WithExportEndpoint("localhost:4317"), // 添加 OpenTelemetry Collector 导出端点
+		provider.WithExportEndpoint("localhost:4317"),
+		provider.WithEnableTracing(true), // 确保启用链路追踪
 	)
 	return p
 }
