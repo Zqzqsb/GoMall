@@ -144,6 +144,30 @@ services:
       timeout: 5s
       retries: 3
 
+  # Redis 代理节点
+  redis-proxy:
+    image: redis:7.0
+    container_name: redis-proxy
+    command: redis-server --port 6379 --protected-mode no
+    ports:
+      - "6390:6379"  # 映射到主机的 6390 端口
+    networks:
+      redis-net:
+        ipv4_address: 10.10.0.20
+    depends_on:
+      - redis-1
+      - redis-2
+      - redis-3
+      - redis-4
+      - redis-5
+      - redis-6
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 3
+
   # Redis 集群创建服务
   redis-cluster-creator:
     image: redis:7.0
@@ -254,7 +278,6 @@ networks:
   redis-net:
     driver: bridge
     ipam:
-      driver: default
       config:
         - subnet: 10.10.0.0/16
 
