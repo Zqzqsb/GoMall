@@ -50,6 +50,12 @@ services:
       - otel-network
       - redis-net
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:9411/zipkin/"]
+      interval: 5s
+      timeout: 1s
+      retries: 3
+      start_period: 10s
 
 networks:
   otel-network:
