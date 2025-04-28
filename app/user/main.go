@@ -63,7 +63,6 @@ func kitexInit() (opts []server.Option) {
 	opts = append(opts, server.WithServiceAddr(addr))
 	opts = append(opts, server.WithSuite(&serversuite.CommonServerSuite{
 		CurrentServiceName: serviceName,
-		RegisteryAddr:      consulAddr,
 	}))
 	// service info
 	opts = append(opts, server.WithServerBasicInfo(&rpcinfo.EndpointBasicInfo{
