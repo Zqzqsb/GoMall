@@ -21,11 +21,11 @@ exporters:
       app: "gomall"
       environment: "production"
   
-  logging:
-    loglevel: debug
+  debug:
+    verbosity: detailed
   
-  jaeger:
-    endpoint: "jaeger:14250"
+  otlp:
+    endpoint: "jaeger:4317"
     tls:
       insecure: true
   
@@ -38,12 +38,12 @@ service:
     traces:
       receivers: [otlp]
       processors: [memory_limiter, batch]
-      exporters: [jaeger, zipkin, logging]
+      exporters: [otlp, zipkin, debug]
     
     metrics:
       receivers: [otlp]
       processors: [memory_limiter, batch]
-      exporters: [prometheus, logging]
+      exporters: [prometheus, debug]
   
   telemetry:
     logs:
