@@ -1,0 +1,59 @@
+version: '3'
+
+services:
+  # OpenTelemetry Collector
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:latest
+    container_name: otel-collector
+    command: ["--config=/etc/otel-collector-config.yaml"]
+    volumes:
+      - ./otel-collector-config.yaml:/etc/otel-collector-config.yaml
+    ports:
+      - "1888:1888"   # pprof 扩展
+      - "8888:8888"   # Prometheus 指标
+      - "8889:8889"   # Prometheus exporter
+      - "13133:13133" # 健康检查
+      - "4317:4317"   # OTLP gRPC 接收器
+      - "4318:4318"   # OTLP HTTP 接收器
+      - "55679:55679" # zpages 扩展
+    networks:
+      - otel-network
+      - redis-net
+    depends_on:
+      - jaeger
+      - zipkin
+    restart: unless-stopped
+
+  # Jaeger - 主要的链路追踪可视化工具
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    container_name: jaeger
+    ports:
+      - "16686:16686"  # Jaeger UI
+      - "14250:14250"  # 接收 model.proto
+      - "14268:14268"  # 接收 jaeger.thrift
+    environment:
+      - COLLECTOR_OTLP_ENABLED=true
+      - COLLECTOR_ZIPKIN_HOST_PORT=:9411
+    networks:
+      - otel-network
+      - redis-net
+    restart: unless-stopped
+
+  # Zipkin - 备选的链路追踪可视化工具
+  zipkin:
+    image: openzipkin/zipkin:latest
+    container_name: zipkin
+    ports:
+      - "9411:9411"  # Zipkin UI 和 API
+    networks:
+      - otel-network
+      - redis-net
+    restart: unless-stopped
+
+networks:
+  otel-network:
+    driver: bridge
+  redis-net:
+    external:
+      name: redis-cluster_redis-net
